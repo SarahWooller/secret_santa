@@ -3,7 +3,7 @@ import ChristmasScene from './ChristmasScene.jsx';
 import './SecretSantaSelector.css';
 
 
-const PARTICIPANTS = [
+const PARTICIPANTS = ['Nick', 'Stephen', 'Alina',
   'Sarah', 'Cathy', 'Laurence', 'Frances', 'Andrew',
   'Biniam', 'Adnan', 'Jo', 'Joe', 'Dan',
 ];
