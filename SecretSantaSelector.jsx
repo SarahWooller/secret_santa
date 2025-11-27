@@ -8,43 +8,77 @@ const PARTICIPANTS = [
   'Biniam', 'Adnan', 'Jo', 'Joe', 'Dan',
 ];
 
-const generateSecretSantaPairs = (participants) => {
+const getOrdSum = (name) => {
+    let sum = 0;
+    for (let i = 0; i < name.length; i++) {
+        // Use charCodeAt to get the 'ord' value of the character
+        sum += name.charCodeAt(i);
+    }
+    return sum;
+};
 
-    const USER_NAME = 'Sarah';
+const generateSecretSantaPairs = (participants) => {
+    // Note: Replace 'Your Name Here' with your name from the PARTICIPANTS array
+    const USER_NAME = 'Your Name Here';
     const DAUGHTER_NAME = 'Cathy';
 
-    let shuffledParticipants = [...participants].sort(() => 0.5 - Math.random());
+    let shuffledParticipants = [...participants];
+
+    shuffledParticipants.sort((a, b) => {
+        // 1. Calculate the sum of ords for comparison
+        const ordSumA = getOrdSum(a);
+        const ordSumB = getOrdSum(b);
+
+        // 2. Apply Modulo 13 to create the Primary Sort Key (Mod 13)
+        // Order by the result of Mod 13
+        const mod13A = ordSumA % 13;
+        const mod13B = ordSumB % 13;
+
+        // Primary sort: Ascending order based on the Modulo 13 result
+        const primarySort = mod13A - mod13B;
+
+        if (primarySort !== 0) {
+            return primarySort;
+        }
+
+        // 3. Tie-breaker: Order by the highest letter (ASCII/ord value)
+        // Find the letter with the highest ord value in the name.
+        const highestLetterA = a.split('').reduce((max, char) => Math.max(max, char.charCodeAt(0)), 0);
+        const highestLetterB = b.split('').reduce((max, char) => Math.max(max, char.charCodeAt(0)), 0);
+
+        // Secondary sort: Ascending order based on the highest character code
+        return highestLetterA - highestLetterB;
+    });
+
+    // ... (Your constraint enforcement loop and final return goes here)
     let pairs = {};
+    let tempShuffledParticipants = [...shuffledParticipants]; // Use the deterministically sorted list for the pairing array
 
     for (let i = 0; i < participants.length; i++) {
         let giver = participants[i];
-        let receiver = shuffledParticipants[i];
+        let receiver = tempShuffledParticipants[i];
 
-        // 1. Initial check for self-pairing
+        // Ensure no self-pairing
         if (giver === receiver) {
-            // Standard swap logic
+            // Swap logic (kept simple)
             if (i === participants.length - 1) {
-                receiver = shuffledParticipants[i - 1];
-                pairs[participants[i - 1]] = shuffledParticipants[i];
+                receiver = tempShuffledParticipants[i - 1];
+                pairs[participants[i - 1]] = tempShuffledParticipants[i];
             } else {
-                let temp = shuffledParticipants[i + 1];
-                shuffledParticipants[i + 1] = shuffledParticipants[i];
+                let temp = tempShuffledParticipants[i + 1];
+                tempShuffledParticipants[i + 1] = tempShuffledParticipants[i];
                 receiver = temp;
             }
         }
 
-        // 2. 🎁 NEW CONSTRAINT CHECK 🎁
-        // If the current pair is User -> Daughter OR Daughter -> User, swap the receiver.
+        // Ensure User <-> Daughter constraint is met
         while (
             (giver === USER_NAME && receiver === DAUGHTER_NAME) ||
             (giver === DAUGHTER_NAME && receiver === USER_NAME)
         ) {
-            // Find the index of the current receiver in the shuffled list
-            let receiverIndex = shuffledParticipants.indexOf(receiver);
-
-            // Swap the receiver with the person at the next index (circularly)
-            let swapIndex = (receiverIndex + 1) % shuffledParticipants.length;
-            receiver = shuffledParticipants[swapIndex];
+            let receiverIndex = tempShuffledParticipants.indexOf(receiver);
+            let swapIndex = (receiverIndex + 1) % tempShuffledParticipants.length;
+            receiver = tempShuffledParticipants[swapIndex];
         }
 
         pairs[giver] = receiver;
