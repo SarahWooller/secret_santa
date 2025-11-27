@@ -7,7 +7,7 @@ const ChristmasScene = () => (
   <div className="christmas-scene-container">
     {/* 🛠️ FIX: Using a real IMG tag so it pushes the width open */}
     <img
-      src="./christmas-scene.png"
+      src="/christmas-scene.png"
       alt="Christmas Scene"
       className="scene-image"
     />
